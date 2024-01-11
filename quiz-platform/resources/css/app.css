@@ -1,0 +1,23 @@
+/* Style for all buttons */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Default button style */
+.btn-primary {
+    background-color: #3490dc;
+    color: #ffffff;
+}
+
+/* Hover effect for all buttons */
+.btn:hover {
+    background-color: #2779bd;
+    color: #ffffff;
+}
