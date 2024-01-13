@@ -32,10 +32,4 @@ Route::middleware('auth')->group(function () {
 Route::get('/quizzes/{quiz}/questions/{question}/edit', [QuestionController::class, 'editQuestion'])->name('questions.edit');
 Route::put('/quizzes/{quiz}/questions/{question}', [QuestionController::class, 'updateQuestion'])->name('questions.update');
 
-//Route::get('/quizzes/{quiz}/questions/create', [QuestionController::class, 'create'])->name('questions.create');
-//Route::post('/quizzes/{quiz}/questions', [QuestionController::class, 'store'])->name('questions.store');
-//Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
-//Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
-//Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
-
 require __DIR__.'/auth.php';
