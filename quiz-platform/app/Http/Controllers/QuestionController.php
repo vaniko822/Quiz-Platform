@@ -7,75 +7,34 @@ use App\Models\Quiz;
 use Illuminate\Http\Request;
 
 class QuestionController extends Controller {
-    
-    // Display the form to add a new question
-    public function create(Quiz $quiz) {
-        return view('questions.create', compact('quiz'));
+
+    public function showAddQuestionsForm($quizId)
+    {
+        // Retrieve the quiz based on $quizId
+        $quiz = Quiz::findOrFail($quizId);
+
+        return view('quizzes.add_questions', compact('quiz'));
     }
 
-    // Store a newly created question in storage
-    public function store(Request $request, Quiz $quiz) {
-        $request->validate([
-            'question' => 'required',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'option1' => 'required',
-            'option2' => 'required',
-            'option3' => 'required',
-            'option4' => 'required',
-            'correct_option' => 'required|in:option1,option2,option3,option4',
+    public function storeQuestions(Request $request, $quizId)
+    {
+        $validatedData = $request->validate([
+            'question' => 'required|string',
+            'option1' => 'required|string',
+            'option2' => 'required|string',
+            'option3' => 'required|string',
+            'option4' => 'required|string',
+            'correct_option' => 'required|string',
         ]);
 
-        $questionData = $request->except(['_token']);
-        $questionData['quiz_id'] = $quiz->id;
+        // Retrieve the quiz based on $quizId
+        $quiz = Quiz::findOrFail($quizId);
 
-        if ($request->hasFile('photo')) {
-            $image = $request->file('photo');
-            $imageName = time().'.'.$image->getClientOriginalExtension();
-            $image->move(public_path('uploads/questions'), $imageName);
-            $questionData['photo'] = 'uploads/questions/'.$imageName;
-        }
+        // Add a new question to the quiz
+        $question = $quiz->questions()->create($validatedData);
 
-        Question::create($questionData);
-
-        return redirect()->route('quizzes.show', $quiz)->with('success', 'Question added successfully');
+        return redirect()->route('quizzes.add-questions', ['quizId' => $quizId])
+            ->with('success', 'Question added successfully');
     }
 
-    // Display the form to edit the specified question
-    public function edit(Question $question) {
-        return view('questions.edit', compact('question'));
-    }
-
-    // Update the specified question in storage
-    public function update(Request $request, Question $question) {
-        $request->validate([
-            'question' => 'required',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'option1' => 'required',
-            'option2' => 'required',
-            'option3' => 'required',
-            'option4' => 'required',
-            'correct_option' => 'required|in:option1,option2,option3,option4',
-        ]);
-
-        $questionData = $request->except(['_token', '_method']);
-
-        if ($request->hasFile('photo')) {
-            $image = $request->file('photo');
-            $imageName = time().'.'.$image->getClientOriginalExtension();
-            $image->move(public_path('uploads/questions'), $imageName);
-            $questionData['photo'] = 'uploads/questions/'.$imageName;
-        }
-
-        $question->update($questionData);
-
-        return redirect()->route('quizzes.show', $question->quiz)->with('success', 'Question updated successfully');
-    }
-
-    // Remove the specified question from storage
-    public function destroy(Question $question) {
-        $quiz = $question->quiz;
-        $question->delete();
-
-        return redirect()->route('quizzes.show', $quiz)->with('success', 'Question deleted successfully');
-    }
 }

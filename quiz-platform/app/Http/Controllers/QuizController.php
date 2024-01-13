@@ -27,7 +27,7 @@ class QuizController extends Controller {
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
-            'main_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'main_photo' => 'nullable|string',
             'description' => 'nullable|string',
         ]);
 
@@ -36,8 +36,6 @@ class QuizController extends Controller {
         }
 
         $user = Auth::user();
-        
-        $photoPath = $request->file('photo')->store('quiz_photos', 'public');
 
         $quiz = new Quiz([
             'name' => $request->input('name'),
@@ -70,9 +68,46 @@ class QuizController extends Controller {
 
     public function finish(Quiz $quiz)
     {
-        // Implement logic to finish the quiz
-        // Calculate and return the final score
-        return response()->json(['score' => 10]); // Replace 10 with the actual score
+        $correctAnswersCount = null;
+        $totalQuestionsCount = $quiz->questions->count();
+
+        return response()->json([
+            'correctAnswersCount' => $correctAnswersCount,
+            'totalQuestionsCount' => $totalQuestionsCount,
+        ]);
+    }
+
+    public function delete(Quiz $quiz)
+    {
+        $quiz->questions()->delete();
+        $quiz->delete();
+        return redirect()->route('dashboard')->with('success', 'Quiz and associated questions deleted successfully');
+    }
+
+    public function edit($quizId)
+    {
+        $quiz = Quiz::findOrFail($quizId);
+
+        return view('quizzes.edit_quiz', compact('quiz'));
+    }
+
+    public function update(Request $request, $quizId)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string',
+            'description' => 'required|string',
+            'photo' => 'required|url',
+        ]);
+
+        $quiz = Quiz::findOrFail($quizId);
+
+        $quiz->update([
+            'name' => $request->input('name'),
+            'description' => $request->input('description'),
+            'main_photo' => $request->input('photo'),
+        ]);
+
+        return redirect()->route('quizzes.show', $quiz)->with('success', 'Quiz updated successfully');
     }
 
 }

@@ -29,7 +29,15 @@
                     <h2 style="color: white;">Quiz Name: {{ $quiz->name }}</h2>
                     <img src="{{ $quiz->main_photo }}" alt="Quiz Photo Not Found" style="height:271px; max-height: 336px; max-width:336px; width: 263px;">
                     <p style="color: white;">{{ $quiz->questions->count() }} Questions</p>
-                    <a href="{{ route('quizzes.show', $quiz) }}">Show Quiz Details</a>
+                    <div>
+                        <a href="{{ route('quizzes.show', $quiz) }}">Show Quiz Details</a>
+                        <form action="{{ route('quizzes.delete', $quiz) }}" method="post" style="">
+                            @csrf
+                            @method('delete')
+                            <button type="submit" class="btn btn-danger" style="background: red; padding: 5px;">Delete Quiz</button>
+                        </form>
+                        <a href="{{ route('quizzes.edit', $quiz) }}" style="margin-left: 10px;">Edit</a>
+                    </div>
                 </div>
                 @endforeach
                 </div>
