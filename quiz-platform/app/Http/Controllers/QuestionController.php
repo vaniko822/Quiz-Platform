@@ -8,33 +8,26 @@ use Illuminate\Http\Request;
 
 class QuestionController extends Controller {
 
-    public function showAddQuestionsForm($quizId)
+    public function editQuestion(Quiz $quiz, Question $question)
     {
-        // Retrieve the quiz based on $quizId
-        $quiz = Quiz::findOrFail($quizId);
-
-        return view('quizzes.add_questions', compact('quiz'));
+        return view('quizzes.edit', compact('quiz', 'question'));
     }
 
-    public function storeQuestions(Request $request, $quizId)
+    public function updateQuestion(Request $request, Quiz $quiz, Question $question)
     {
-        $validatedData = $request->validate([
-            'question' => 'required|string',
-            'option1' => 'required|string',
-            'option2' => 'required|string',
-            'option3' => 'required|string',
-            'option4' => 'required|string',
-            'correct_option' => 'required|string',
+        $request->validate([
+            'question' => 'required|string|max:255',
+            'photo' => 'required|string|max:255',
+            'option1' => 'required|string|max:255',
+            'option2' => 'required|string|max:255',
+            'option3' => 'required|string|max:255',
+            'option4' => 'required|string|max:255',
+            'correct_option' => 'required|string|in:option1,option2,option3,option4',
         ]);
 
-        // Retrieve the quiz based on $quizId
-        $quiz = Quiz::findOrFail($quizId);
+        $question->update($request->all());
 
-        // Add a new question to the quiz
-        $question = $quiz->questions()->create($validatedData);
-
-        return redirect()->route('quizzes.add-questions', ['quizId' => $quizId])
-            ->with('success', 'Question added successfully');
+        return redirect()->route('quizzes.show', $quiz)->with('success', 'Question updated successfully');
     }
 
 }

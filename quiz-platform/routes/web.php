@@ -29,8 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/quizzes/add-questions/{quizId}', [QuestionController::class, 'showAddQuestionsForm'])->name('quizzes.add-questions');
-Route::post('/quizzes/store-questions/{quizId}', [QuestionController::class, 'storeQuestions'])->name('quizzes.storeQuestions');
+Route::get('/quizzes/{quiz}/questions/{question}/edit', [QuestionController::class, 'editQuestion'])->name('questions.edit');
+Route::put('/quizzes/{quiz}/questions/{question}', [QuestionController::class, 'updateQuestion'])->name('questions.update');
 
 //Route::get('/quizzes/{quiz}/questions/create', [QuestionController::class, 'create'])->name('questions.create');
 //Route::post('/quizzes/{quiz}/questions', [QuestionController::class, 'store'])->name('questions.store');
